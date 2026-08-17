@@ -7,7 +7,7 @@ IS-PROJECT-2026 Mini-Project Git Workflow Challenge.
 [https://is-project-2026.github.io/interactive-portfolio-166588/](https://is-project-2026.github.io/interactive-portfolio-166588/)
 
 ## 📖 About
-This is an interactive, terminal-styled personal portfolio where visitors can type
+This is a fully interactive, terminal-styled personal portfolio where visitors can type
 commands (`help`, `about`, `projects`, `skills`, `contact`, `whoami`) directly into a live
 input to navigate the site, alongside a traditional scrollable layout. It showcases:
 
