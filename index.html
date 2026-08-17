@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Otto Oyieri — Terminal Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0f0d;
+    --bg-alt:#0e1512;
+    --green:#39ff88;
+    --green-dim:#1e6b41;
+    --cyan:#4dd8ff;
+    --muted:#7a9c8a;
+    --text:#e8f5ec;
+    --amber:#ffb454;
+    --border:#1c2b23;
+    --mono:'JetBrains Mono', monospace;
+    --sans:'Inter', sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  a{color:var(--green);text-decoration:none;}
+  ::selection{background:var(--green-dim);color:var(--text);}
+
+  /* scanline / crt vibe, subtle */
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background:repeating-linear-gradient(0deg, rgba(57,255,136,0.015) 0px, rgba(57,255,136,0.015) 1px, transparent 1px, transparent 3px);
+    pointer-events:none;
+    z-index:1000;
+  }
+
+  header.nav{
+    position:sticky;top:0;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:1.1rem 2rem;
+    background:rgba(10,15,13,0.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    z-index:100;
+  }
+  .nav .logo{font-family:var(--mono);font-weight:700;color:var(--green);font-size:1rem;}
+  .nav .logo span{color:var(--muted);}
+  .nav ul{display:flex;gap:1.8rem;list-style:none;font-family:var(--mono);font-size:0.85rem;}
+  .nav ul a{color:var(--muted);transition:color .2s;}
+  .nav ul a:hover{color:var(--green);}
+  .nav-toggle{display:none;background:none;border:1px solid var(--border);color:var(--green);font-family:var(--mono);padding:.4rem .7rem;border-radius:4px;}
+
+  /* HERO — interactive terminal */
+  .hero{
+    min-height:92vh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:4rem 2rem;
+    max-width:900px;margin:0 auto;
+  }
+  .terminal{
+    background:var(--bg-alt);
+    border:1px solid var(--border);
+    border-radius:8px;
+    box-shadow:0 0 0 1px rgba(57,255,136,0.05), 0 20px 60px -20px rgba(0,0,0,0.6);
+    overflow:hidden;
+  }
+  .terminal-bar{
+    display:flex;align-items:center;gap:.5rem;
+    padding:.7rem 1rem;
+    background:#0d1512;
+    border-bottom:1px solid var(--border);
+  }
+  .dot{width:10px;height:10px;border-radius:50%;}
+  .dot.r{background:#ff5f56;} .dot.y{background:#ffbd2e;} .dot.g{background:#27c93f;}
+  .terminal-title{margin-left:.5rem;font-family:var(--mono);font-size:.75rem;color:var(--muted);}
+  .terminal-body{
+    padding:1.4rem 1.4rem 1.6rem;
+    font-family:var(--mono);
+    font-size:.92rem;
+    min-height:260px;
+  }
+  .terminal-body .line{margin-bottom:.35rem;white-space:pre-wrap;word-break:break-word;}
+  .prompt-user{color:var(--cyan);}
+  .prompt-path{color:var(--green);}
+  .prompt-sym{color:var(--muted);}
+  .out{color:var(--text);}
+  .out.muted{color:var(--muted);}
+  .out.amber{color:var(--amber);}
+  .input-row{display:flex;align-items:center;gap:.4rem;}
+  #cmdInput{
+    background:transparent;border:none;outline:none;
+    color:var(--text);font-family:var(--mono);font-size:.92rem;
+    flex:1;caret-color:var(--green);
+  }
+  .cursor{display:inline-block;width:8px;height:1em;background:var(--green);animation:blink 1s steps(1) infinite;vertical-align:text-bottom;}
+  @keyframes blink{50%{opacity:0;}}
+
+  .hero-sub{margin-top:1.4rem;font-family:var(--mono);font-size:.8rem;color:var(--muted);text-align:center;}
+  .hero-sub kbd{background:var(--bg-alt);border:1px solid var(--border);padding:.15rem .45rem;border-radius:4px;color:var(--green);}
+
+  section{padding:5rem 2rem;max-width:1000px;margin:0 auto;}
+  .eyebrow{font-family:var(--mono);font-size:.78rem;color:var(--green);letter-spacing:.05em;margin-bottom:.6rem;}
+  .eyebrow::before{content:"$ ";color:var(--muted);}
+  h2.section-title{font-family:var(--mono);font-size:1.7rem;font-weight:700;margin-bottom:2rem;color:var(--text);}
+
+  /* about */
+  .about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:2.5rem;align-items:start;}
+  .about-grid p{color:var(--muted);margin-bottom:1rem;font-size:.98rem;}
+  .about-grid strong{color:var(--text);}
+  .stack{display:flex;flex-wrap:wrap;gap:.5rem;}
+  .stack span{
+    font-family:var(--mono);font-size:.78rem;
+    border:1px solid var(--border);color:var(--cyan);
+    padding:.35rem .7rem;border-radius:4px;background:var(--bg-alt);
+  }
+
+  /* projects */
+  .projects{display:grid;gap:1.2rem;}
+  .card{
+    border:1px solid var(--border);border-radius:8px;
+    background:var(--bg-alt);
+    padding:1.6rem;
+    transition:border-color .2s, transform .2s;
+    position:relative;
+    overflow:hidden;
+  }
+  .card:hover{border-color:var(--green-dim);transform:translateY(-2px);}
+  .card::before{
+    content:attr(data-tag);
+    position:absolute;top:1.1rem;right:1.4rem;
+    font-family:var(--mono);font-size:.7rem;color:var(--amber);
+    border:1px solid rgba(255,180,84,0.3);padding:.15rem .5rem;border-radius:20px;
+  }
+  .card h3{font-family:var(--mono);font-size:1.15rem;margin-bottom:.5rem;color:var(--green);}
+  .card p{color:var(--muted);font-size:.92rem;margin-bottom:1rem;}
+  .card .tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem;}
+  .card .tags span{font-family:var(--mono);font-size:.72rem;color:var(--cyan);}
+  .card .tags span::before{content:"#";color:var(--muted);}
+  .card-links a{font-family:var(--mono);font-size:.82rem;margin-right:1.2rem;border-bottom:1px dashed var(--green-dim);}
+  .card-links a:hover{border-color:var(--green);}
+
+  /* contact */
+  .contact-box{
+    border:1px solid var(--border);border-radius:8px;background:var(--bg-alt);
+    padding:2rem;font-family:var(--mono);
+  }
+  .contact-box .row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border);font-size:.9rem;}
+  .contact-box .row:last-child{border-bottom:none;}
+  .contact-box .row .k{color:var(--muted);}
+  .contact-box .row .v a{color:var(--cyan);}
+
+  footer{
+    text-align:center;padding:2.5rem 1rem 3rem;
+    font-family:var(--mono);font-size:.75rem;color:var(--muted);
+    border-top:1px solid var(--border);
+  }
+
+  @media(max-width:720px){
+    .about-grid{grid-template-columns:1fr;}
+    .nav ul{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="logo">otto<span>@</span>portfolio<span>:~$</span></div>
+  <ul>
+    <li><a href="#about">about</a></li>
+    <li><a href="#projects">projects</a></li>
+    <li><a href="#contact">contact</a></li>
+  </ul>
+</header>
+
+<section class="hero">
+  <div class="terminal">
+    <div class="terminal-bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="terminal-title">otto@strathmore: ~/portfolio</span>
+    </div>
+    <div class="terminal-body" id="termBody">
+      <div class="line out">Welcome to Otto's portfolio shell. Type <span style="color:var(--green)">help</span> to see available commands.</div>
+      <div class="input-row">
+        <span class="prompt-user">otto</span><span class="prompt-sym">@</span><span class="prompt-path">portfolio</span><span class="prompt-sym">:~$&nbsp;</span>
+        <input id="cmdInput" type="text" autocomplete="off" spellcheck="false" aria-label="Terminal command input">
+        <span class="cursor" id="fakeCursor"></span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-sub">try <kbd>help</kbd> · <kbd>about</kbd> · <kbd>projects</kbd> · <kbd>contact</kbd> · <kbd>whoami</kbd></div>
+</section>
+
+<section id="about">
+  <div class="eyebrow">whoami</div>
+  <h2 class="section-title">About</h2>
+  <div class="about-grid">
+    <div>
+      <p><strong>Otto Oyieri</strong> — final-year Bachelor of Informatics and Computer Science student at Strathmore University, Nairobi. I build things end to end: backend logic, data pipelines, embedded systems, and interfaces that don't look like everyone else's.</p>
+      <p>Recent work spans a Kanban-driven group system shipped as <strong>COMMITed Ltd.</strong>, a real-time IoT farm monitoring dashboard, and a machine-learning sales intelligence proposal built around Kenya Airways data.</p>
+      <p>I care about clean git history as much as clean code — every project below was shipped through issues, feature branches, and reviewed pull requests, not pushed straight to main.</p>
+    </div>
+    <div>
+      <div class="stack">
+        <span>Python</span><span>JavaScript</span><span>HTML/CSS</span><span>Git &amp; GitHub</span>
+        <span>Embedded / ESP32</span><span>SQL</span><span>Agile / Kanban</span><span>REST APIs</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="eyebrow">ls ./projects</div>
+  <h2 class="section-title">Projects</h2>
+  <div class="projects">
+
+    <div class="card" data-tag="group project">
+      <h3>COMMITed Ltd. — AgileLab1</h3>
+      <p>Group-built system under the IS-PROJECT-2026 org. Served as Chief Data Officer on a 5-person team; redesigned the site to a dark neon aesthetic and resolved branch protection and cherry-pick conflicts along the way.</p>
+      <div class="tags"><span>git-workflow</span><span>agile</span><span>team-project</span></div>
+      <div class="card-links">
+        <a href="#" target="_blank" rel="noopener">Repo →</a>
+        <a href="#" target="_blank" rel="noopener">Live Demo →</a>
+      </div>
+    </div>
+
+    <div class="card" data-tag="IoT">
+      <h3>Shamba Sense</h3>
+      <p>Real-time farm monitoring dashboard built for ICS 4111 (Embedded Systems &amp; IoT), streaming live sensor data off an ESP32 to track farm conditions as they change.</p>
+      <div class="tags"><span>esp32</span><span>iot</span><span>dashboard</span></div>
+      <div class="card-links">
+        <a href="#" target="_blank" rel="noopener">Repo →</a>
+        <a href="#" target="_blank" rel="noopener">Live Demo →</a>
+      </div>
+    </div>
+
+    <div class="card" data-tag="proposal">
+      <h3>DDWSOMS</h3>
+      <p>Machine Learning-Driven Sales and Order Intelligence System — a final-year project proposal designing ML-backed sales and order analytics for Kenya Airways.</p>
+      <div class="tags"><span>machine-learning</span><span>data-intelligence</span><span>final-year-project</span></div>
+      <div class="card-links">
+        <a href="#" target="_blank" rel="noopener">Proposal →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="contact">
+  <div class="eyebrow">cat contact.txt</div>
+  <h2 class="section-title">Contact</h2>
+  <div class="contact-box">
+    <div class="row"><span class="k">github</span><span class="v"><a href="https://github.com/aawbed" target="_blank" rel="noopener">github.com/aawbed</a></span></div>
+    <div class="row"><span class="k">email</span><span class="v"><a href="mailto:jermaineobed.oyieri@strathmore.edu">jermaineobed.oyieri@strathmore.edu</a></span></div>
+    <div class="row"><span class="k">status</span><span class="v" style="color:var(--green)">open to opportunities</span></div>
+  </div>
+</section>
+
+<footer>
+  built &amp; shipped by Otto Oyieri · deployed via GitHub Pages · © 2026
+</footer>
+
+<script>
+  const term = document.getElementById('termBody');
+  const input = document.getElementById('cmdInput');
+
+  const commands = {
+    help: `Available commands:
+  help       show this list
+  about      who is otto
+  projects   list projects
+  whoami     quick identity dump
+  contact    how to reach otto
+  clear      clear the terminal
+  sudo       (nice try)`,
+    about: `Otto Oyieri — final-year BSc. Informatics & Computer Science, Strathmore University.
+Builds full-stack systems, embedded/IoT dashboards, and ML-driven proposals.
+Scroll down or run 'projects' to see the work.`,
+    whoami: `otto — student, developer, chief data officer @ COMMITed Ltd.`,
+    projects: `1. COMMITed Ltd. (AgileLab1) — group system, dark neon UI, git workflow discipline
+2. Shamba Sense — real-time ESP32 farm monitoring dashboard
+3. DDWSOMS — ML sales & order intelligence proposal for Kenya Airways
+→ scroll to #projects for links`,
+    contact: `github: github.com/aawbed
+email:  jermaineobed.oyieri@strathmore.edu`,
+    sudo: `Permission denied: nice try, this is a static site 😄`
+  };
+
+  function printLine(html, cls) {
+    const div = document.createElement('div');
+    div.className = 'line out' + (cls ? ' ' + cls : '');
+    div.innerHTML = html;
+    term.insertBefore(div, term.querySelector('.input-row'));
+  }
+
+  function runCommand(raw) {
+    const cmd = raw.trim().toLowerCase();
+    printLine(`<span class="prompt-user">otto</span><span class="prompt-sym">@</span><span class="prompt-path">portfolio</span><span class="prompt-sym">:~$ </span>${raw}`);
+    if (!cmd) return;
+    if (cmd === 'clear') {
+      term.querySelectorAll('.line').forEach(l => l.remove());
+      return;
+    }
+    if (cmd === 'projects' || cmd === 'contact') {
+      document.getElementById(cmd).scrollIntoView({behavior:'smooth'});
+    }
+    if (commands[cmd]) {
+      printLine(commands[cmd].replace(/\n/g, '<br>'));
+    } else {
+      printLine(`command not found: ${raw}. type <span style="color:var(--green)">help</span>`, 'amber');
+    }
+  }
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      runCommand(input.value);
+      input.value = '';
+      term.scrollTop = term.scrollHeight;
+    }
+  });
+
+  // boot sequence
+  const bootLines = [
+    'booting portfolio.sh ...',
+    'loading profile: otto@strathmore ... done',
+    'mounting /projects ... done',
+    'ready.'
+  ];
+  window.addEventListener('DOMContentLoaded', () => {
+    let i = 0;
+    const boot = document.querySelector('.terminal-body .line');
+    boot.remove();
+    function next() {
+      if (i < bootLines.length) {
+        printLine(bootLines[i], i === bootLines.length - 1 ? '' : 'muted');
+        i++;
+        setTimeout(next, 350);
+      } else {
+        printLine(`Type <span style="color:var(--green)">help</span> to see available commands.`);
+        input.focus();
+      }
+    }
+    next();
+  });
+</script>
+
+</body>
+</html>
